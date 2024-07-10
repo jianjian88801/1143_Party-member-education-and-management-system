@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.JicengdanweiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.zhibu_id as zhibuId
+        ,a.jicengdanwei_name as jicengdanweiName
+        ,a.jicengdanwei_lianxiren as jicengdanweiLianxiren
+        ,a.jicengdanwei_phone as jicengdanweiPhone
+        ,a.jicengdanwei_types as jicengdanweiTypes
+        ,a.jicengdanwei_address as jicengdanweiAddress
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.JicengdanweiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,zhibu.zhibu_name as zhibuName
+        ,zhibu.zhibu_dangzhibu as zhibuDangzhibu
+        ,zhibu.zhibu_phone as zhibuPhone
+        ,zhibu.zhibu_address as zhibuAddress
+        ,zhibu.zhibu_email as zhibuEmail
+        ,zhibu.zhibu_content as zhibuContent
+        ,zhibu.zhibu_delete as zhibuDelete
+
+        FROM jicengdanwei  a
+        left JOIN zhibu zhibu ON a.zhibu_id = zhibu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.zhibuId != null and params.zhibuId != ''">
+                and (
+                    a.zhibu_id = #{params.zhibuId}
+                )
+            </if>
+            <if test=" params.jicengdanweiName != '' and params.jicengdanweiName != null and params.jicengdanweiName != 'null' ">
+                and a.jicengdanwei_name like CONCAT('%',#{params.jicengdanweiName},'%')
+            </if>
+            <if test=" params.jicengdanweiLianxiren != '' and params.jicengdanweiLianxiren != null and params.jicengdanweiLianxiren != 'null' ">
+                and a.jicengdanwei_lianxiren like CONCAT('%',#{params.jicengdanweiLianxiren},'%')
+            </if>
+            <if test=" params.jicengdanweiPhone != '' and params.jicengdanweiPhone != null and params.jicengdanweiPhone != 'null' ">
+                and a.jicengdanwei_phone like CONCAT('%',#{params.jicengdanweiPhone},'%')
+            </if>
+            <if test="params.jicengdanweiTypes != null and params.jicengdanweiTypes != ''">
+                and a.jicengdanwei_types = #{params.jicengdanweiTypes}
+            </if>
+            <if test=" params.jicengdanweiAddress != '' and params.jicengdanweiAddress != null and params.jicengdanweiAddress != 'null' ">
+                and a.jicengdanwei_address like CONCAT('%',#{params.jicengdanweiAddress},'%')
+            </if>
+
+                <!-- 判断支部的id不为空 -->
+            <if test=" params.zhibuIdNotNull != '' and params.zhibuIdNotNull != null and params.zhibuIdNotNull != 'null' ">
+                and a.zhibu_id IS NOT NULL
+            </if>
+            <if test=" params.zhibuName != '' and params.zhibuName != null and params.zhibuName != 'null' ">
+                and zhibu.zhibu_name like CONCAT('%',#{params.zhibuName},'%')
+            </if>
+            <if test=" params.zhibuDangzhibu != '' and params.zhibuDangzhibu != null and params.zhibuDangzhibu != 'null' ">
+                and zhibu.zhibu_dangzhibu like CONCAT('%',#{params.zhibuDangzhibu},'%')
+            </if>
+            <if test=" params.zhibuPhone != '' and params.zhibuPhone != null and params.zhibuPhone != 'null' ">
+                and zhibu.zhibu_phone like CONCAT('%',#{params.zhibuPhone},'%')
+            </if>
+            <if test=" params.zhibuAddress != '' and params.zhibuAddress != null and params.zhibuAddress != 'null' ">
+                and zhibu.zhibu_address like CONCAT('%',#{params.zhibuAddress},'%')
+            </if>
+            <if test=" params.zhibuEmail != '' and params.zhibuEmail != null and params.zhibuEmail != 'null' ">
+                and zhibu.zhibu_email like CONCAT('%',#{params.zhibuEmail},'%')
+            </if>
+            <if test=" params.zhibuContent != '' and params.zhibuContent != null and params.zhibuContent != 'null' ">
+                and zhibu.zhibu_content like CONCAT('%',#{params.zhibuContent},'%')
+            </if>
+            <if test="params.zhibuDeleteStart != null  and params.zhibuDeleteStart != '' ">
+                <![CDATA[  and zhibu.zhibu_delete >= #{params.zhibuDeleteStart}   ]]>
+            </if>
+            <if test="params.zhibuDeleteEnd != null  and params.zhibuDeleteEnd != '' ">
+                <![CDATA[  and zhibu.zhibu_delete <= #{params.zhibuDeleteEnd}   ]]>
+            </if>
+            <if test="params.zhibuDelete != null  and params.zhibuDelete != '' ">
+                and zhibu.zhibu_delete = #{params.zhibuDelete}
+            </if>
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>

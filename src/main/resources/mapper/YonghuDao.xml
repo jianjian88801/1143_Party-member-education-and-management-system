@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.YonghuDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.username as username
+        ,a.password as password
+        ,a.yonghu_name as yonghuName
+        ,a.yonghu_photo as yonghuPhoto
+        ,a.minzu as minzu
+        ,a.sex_types as sexTypes
+        ,a.jiguan as jiguan
+        ,a.chushengriqi as chushengriqi
+        ,a.wenhuachengdu as wenhuachengdu
+        ,a.gongzuodanwei as gongzuodanwei
+        ,a.gongzuozhiwu as gongzuozhiwu
+        ,a.rudangshijian as rudangshijian
+        ,a.zhuanzhengshijian as zhuanzhengshijian
+        ,a.zhibu_id as zhibuId
+        ,a.qianfariqi as qianfariqi
+        ,a.yonghu_phone as yonghuPhone
+        ,a.yonghu_id_number as yonghuIdNumber
+        ,a.yonghu_email as yonghuEmail
+        ,a.yonghu_delete as yonghuDelete
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.YonghuView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,zhibu.zhibu_name as zhibuName
+        ,zhibu.zhibu_dangzhibu as zhibuDangzhibu
+        ,zhibu.zhibu_phone as zhibuPhone
+        ,zhibu.zhibu_address as zhibuAddress
+        ,zhibu.zhibu_email as zhibuEmail
+        ,zhibu.zhibu_content as zhibuContent
+        ,zhibu.zhibu_delete as zhibuDelete
+
+        FROM yonghu  a
+        left JOIN zhibu zhibu ON a.zhibu_id = zhibu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and a.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and a.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and a.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.minzu != '' and params.minzu != null and params.minzu != 'null' ">
+                and a.minzu like CONCAT('%',#{params.minzu},'%')
+            </if>
+            <if test="params.sexTypes != null and params.sexTypes != ''">
+                and a.sex_types = #{params.sexTypes}
+            </if>
+            <if test=" params.jiguan != '' and params.jiguan != null and params.jiguan != 'null' ">
+                and a.jiguan like CONCAT('%',#{params.jiguan},'%')
+            </if>
+            <if test=" params.chushengriqiStart != '' and params.chushengriqiStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.chushengriqi) >= UNIX_TIMESTAMP(#{params.chushengriqiStart}) ]]>
+            </if>
+            <if test=" params.chushengriqiEnd != '' and params.chushengriqiEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.chushengriqi) <= UNIX_TIMESTAMP(#{params.chushengriqiEnd}) ]]>
+            </if>
+            <if test=" params.wenhuachengdu != '' and params.wenhuachengdu != null and params.wenhuachengdu != 'null' ">
+                and a.wenhuachengdu like CONCAT('%',#{params.wenhuachengdu},'%')
+            </if>
+            <if test=" params.gongzuodanwei != '' and params.gongzuodanwei != null and params.gongzuodanwei != 'null' ">
+                and a.gongzuodanwei like CONCAT('%',#{params.gongzuodanwei},'%')
+            </if>
+            <if test=" params.gongzuozhiwu != '' and params.gongzuozhiwu != null and params.gongzuozhiwu != 'null' ">
+                and a.gongzuozhiwu like CONCAT('%',#{params.gongzuozhiwu},'%')
+            </if>
+            <if test=" params.rudangshijianStart != '' and params.rudangshijianStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.rudangshijian) >= UNIX_TIMESTAMP(#{params.rudangshijianStart}) ]]>
+            </if>
+            <if test=" params.rudangshijianEnd != '' and params.rudangshijianEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.rudangshijian) <= UNIX_TIMESTAMP(#{params.rudangshijianEnd}) ]]>
+            </if>
+            <if test=" params.zhuanzhengshijianStart != '' and params.zhuanzhengshijianStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.zhuanzhengshijian) >= UNIX_TIMESTAMP(#{params.zhuanzhengshijianStart}) ]]>
+            </if>
+            <if test=" params.zhuanzhengshijianEnd != '' and params.zhuanzhengshijianEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.zhuanzhengshijian) <= UNIX_TIMESTAMP(#{params.zhuanzhengshijianEnd}) ]]>
+            </if>
+            <if test="params.zhibuId != null and params.zhibuId != ''">
+                and (
+                    a.zhibu_id = #{params.zhibuId}
+                )
+            </if>
+            <if test=" params.qianfariqi != '' and params.qianfariqi != null and params.qianfariqi != 'null' ">
+                and a.qianfariqi like CONCAT('%',#{params.qianfariqi},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and a.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and a.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and a.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.yonghuDeleteStart != null and params.yonghuDeleteStart != ''">
+                <![CDATA[  and a.yonghu_delete >= #{params.yonghuDeleteStart}   ]]>
+            </if>
+            <if test="params.yonghuDeleteEnd != null and params.yonghuDeleteEnd != ''">
+                <![CDATA[  and a.yonghu_delete <= #{params.yonghuDeleteEnd}   ]]>
+            </if>
+             <if test="params.yonghuDelete != null and params.yonghuDelete != ''">
+                and a.yonghu_delete = #{params.yonghuDelete}
+             </if>
+
+                <!-- 判断支部的id不为空 -->
+            <if test=" params.zhibuIdNotNull != '' and params.zhibuIdNotNull != null and params.zhibuIdNotNull != 'null' ">
+                and a.zhibu_id IS NOT NULL
+            </if>
+            <if test=" params.zhibuName != '' and params.zhibuName != null and params.zhibuName != 'null' ">
+                and zhibu.zhibu_name like CONCAT('%',#{params.zhibuName},'%')
+            </if>
+            <if test=" params.zhibuDangzhibu != '' and params.zhibuDangzhibu != null and params.zhibuDangzhibu != 'null' ">
+                and zhibu.zhibu_dangzhibu like CONCAT('%',#{params.zhibuDangzhibu},'%')
+            </if>
+            <if test=" params.zhibuPhone != '' and params.zhibuPhone != null and params.zhibuPhone != 'null' ">
+                and zhibu.zhibu_phone like CONCAT('%',#{params.zhibuPhone},'%')
+            </if>
+            <if test=" params.zhibuAddress != '' and params.zhibuAddress != null and params.zhibuAddress != 'null' ">
+                and zhibu.zhibu_address like CONCAT('%',#{params.zhibuAddress},'%')
+            </if>
+            <if test=" params.zhibuEmail != '' and params.zhibuEmail != null and params.zhibuEmail != 'null' ">
+                and zhibu.zhibu_email like CONCAT('%',#{params.zhibuEmail},'%')
+            </if>
+            <if test=" params.zhibuContent != '' and params.zhibuContent != null and params.zhibuContent != 'null' ">
+                and zhibu.zhibu_content like CONCAT('%',#{params.zhibuContent},'%')
+            </if>
+            <if test="params.zhibuDeleteStart != null  and params.zhibuDeleteStart != '' ">
+                <![CDATA[  and zhibu.zhibu_delete >= #{params.zhibuDeleteStart}   ]]>
+            </if>
+            <if test="params.zhibuDeleteEnd != null  and params.zhibuDeleteEnd != '' ">
+                <![CDATA[  and zhibu.zhibu_delete <= #{params.zhibuDeleteEnd}   ]]>
+            </if>
+            <if test="params.zhibuDelete != null  and params.zhibuDelete != '' ">
+                and zhibu.zhibu_delete = #{params.zhibuDelete}
+            </if>
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
